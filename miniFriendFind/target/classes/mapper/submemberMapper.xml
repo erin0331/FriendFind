@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="submember">
+	<select id="addr1" resultType="addr1DTO">
+		SELECT * FROM "ADDR1"
+	</select>
+	<select id="addr2" resultType="addr2DTO">
+		SELECT * FROM ADDR2 WHERE ADDR1NUM =#{addr1Num}
+	</select>
+	<select id="hobby" resultType="hobbyDTO">
+		SELECT * FROM "HOBBY"
+	</select>
+	<select id="job" resultType="jobDTO">
+		SELECT * FROM "JOB"
+	</select>
+	<select id="subjob" resultType="subjobDTO">
+		SELECT * FROM "SUBJOB" WHERE JOBNUM =#{jobNum}
+	</select>
+	<select id="hanglehobby" parameterType="hobbyDTO" resultType="hobbyDTO">
+		SELECT * FROM "HOBBY" WHERE HOBBYNUM =#{hobbyNum}
+	</select>
+
+	
+
+</mapper>

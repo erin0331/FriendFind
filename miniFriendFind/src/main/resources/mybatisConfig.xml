@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias type="com.find.friend.MemberDTO" alias="memberDTO"></typeAlias>
+		<typeAlias type="com.find.friend.ReplyDTO" alias="replyDTO"></typeAlias>
+		<typeAlias type="com.find.friend.ChildInfoDTO" alias="childInfoDTO"></typeAlias>
+		<typeAlias type="com.find.friend.HobbyDTO" alias="hobbyDTO"></typeAlias>
+
+	<typeAlias alias="addr1DTO" type="com.find.friend.Addr1DTO" />
+
+	<typeAlias alias="addr2DTO" type="com.find.friend.Addr2DTO" />
+
+	<typeAlias alias="jobDTO" type="com.find.friend.JobDTO" />
+
+	<typeAlias alias="subjobDTO" type="com.find.friend.subJobDTO" />
+
+	<typeAlias alias="hangleDTO" type="com.find.friend.HangleDTO" />
+	</typeAliases>
+	<mappers>
+		<mapper resource="mapper/memberMapper.xml" />
+		<mapper resource="mapper/replyMapper.xml" />
+		<mapper resource="mapper/hobbyMapper.xml" />
+		<mapper resource="mapper/submemberMapper.xml"/>
+	</mappers>
+</configuration>

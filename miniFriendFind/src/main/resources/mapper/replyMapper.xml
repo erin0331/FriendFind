@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="reply">
+	<select id="list" parameterType="String" resultType="replyDTO">
+<!-- 	SELECT A.* FROM reply A
+	WHERE owner=#{owner}
+	START WITH upid=0
+	CONNECT BY PRIOR id=UPID  -->
+	SELECT * FROM (SELECT CONNECT_BY_ROOT(id) AS root,rownum AS num, A.* FROM reply A
+			WHERE owner=#{owner}
+			START WITH upid=0
+			CONNECT BY PRIOR id=UPID 
+			ORDER Siblings BY id 
+		<!-- 	ORDER BY CONNECT_BY_ROOT(id), SEQ  -->
+			)
+	
+	</select>
+	<update id="update" parameterType="replyDTO">
+		update reply set content = #{content}, writeDate=TO_CHAR(SYSDATE, 'YYYY-MM-DD HH:MI')
+		where id=#{id}
+	</update>
+	
+	<insert id="insert" parameterType="replyDTO">
+		INSERT INTO reply  VALUES (id_seq.NEXTVAL,${upId},${seq},${depth},#{owner},#{content},#{writer},TO_CHAR(SYSDATE, 'YYYY-MM-DD HH:MI'))
+	</insert>
+	<delete id="delete" parameterType="replyDTO">
+		Delete from reply  where id in#{id}
+	</delete>
+	<select id="selectChildInfo" parameterType="replyDTO" resultType="childInfoDTO">
+		SELECT num, root, DEPTH  FROM (SELECT rownum AS num,CONNECT_BY_ROOT(id) AS root, A.* FROM reply A
+			WHERE owner=#{owner}
+			START WITH upid=0
+			CONNECT BY PRIOR id=UPID 
+			) WHERE id = #{id}
+	</select>
+	<select id="getDeleteChild" parameterType="childInfoDTO" resultType="replyDTO" >
+		SELECT ID, PATH, "DEPTH" FROM (SELECT CONNECT_BY_ROOT(id) AS root, rownum AS num,
+			SYS_CONNECT_BY_PATH(id,'/') AS PATH, 	A.* 
+			FROM reply A
+			WHERE owner=#{owner}
+			START WITH upid=0
+			CONNECT BY PRIOR id=UPID 
+			ORDER Siblings BY id  
+			) where num>#{num} AND root=#{root} AND depth>#{depth}
+	</select>
+	
+	
+	<select id="one" parameterType="replyDTO" resultType="replyDTO">
+		select * from reply where id=#{id}
+	</select>
+	<select id="getNextSeq" parameterType="replyDTO" resultType="int">
+		<!-- select NVL(max(SEQ),0)+1 from reply where upid = (select UPID from reply where id=#{id}) -->
+		SELECT seq+1 as seq FROM REPLY 
+		WHERE id=#{id}
+	</select>
+	<update id="updateSeq" parameterType="replyDTO">
+	UPDATE REPLY SET seq = seq+1 WHERE ID  IN (
+			SELECT ID FROM  (
+			SELECT CONNECT_BY_ROOT(id) AS root, A.* FROM reply A
+			WHERE owner=#{owner}
+			START WITH upid=0
+			CONNECT BY PRIOR id=UPID ) B 
+		WHERE root =
+			(
+				SELECT root FROM (SELECT CONNECT_BY_ROOT(id) AS root, A.* FROM reply A
+				WHERE owner=#{owner}
+				START WITH upid=0
+				CONNECT BY PRIOR id=UPID 
+				) WHERE id = #{id}
+			)
+		AND seq >= #{seq}
+		)
+	
+<!-- 		UPDATE REPLY SET seq = seq+1 WHERE ID  IN (
+			SELECT  ID  FROM (
+				SELECT ROW_NUMBER() OVER(PARTITION BY a.SEQ ORDER BY A.id, A.seq) NUM
+			     , A.*
+			 	 FROM REPLY A
+			  	WHERE owner=#{owner} AND seq>=#{seq}) 
+			WHERE num = (SELECT ROW_NUMBER() OVER(PARTITION BY a.SEQ ORDER BY A.id, A.seq) NUM
+			 			 FROM REPLY A
+			  			WHERE owner=#{owner} AND id=#{id})
+ 		 ) -->
+ 		 
+		<!-- UPDATE reply SET seq=seq+1 
+		WHERE ID IN (
+			SELECT ID FROM (
+				SELECT ROW_NUMBER () OVER(PARTITION BY a.SEQ ORDER BY A.id, A.seq) NUM, A.* FROM reply A
+				WHERE owner=#{owner}
+				START WITH upid=0
+				CONNECT BY PRIOR id=UPID )
+			WHERE num = ( SELECT num  FROM (
+		SELECT ROW_NUMBER () OVER (PARTITION BY a.SEQ ORDER BY A.id, A.seq) NUM, A.* FROM reply A
+		WHERE owner=#{owner}
+		START WITH upid=0
+		CONNECT BY PRIOR id=UPID ) 
+		where id=#{id} AND seq >= #{seq} ) 
+		) -->
+	</update>
+	
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="hobby">
+
+	<select id="getPickHobby" parameterType="java.util.ArrayList" resultType="hobbyDTO">
+<!-- 	 select * from hobby where hobbynum in (
+	 <foreach collection="array" item="item" index="index" separator=",">
+	 	'${item}'
+	 </foreach>
+	 ) -->
+	 select HOBBYNUM, HOBBY from HOBBY where HOBBYNUM in 
+	 <foreach collection="array" item="item" index="index" open="(" close=")" separator=",">
+	 	'${item}'
+	 </foreach>
+	
+	</select> 
+	<!-- 
+	<resultMap type="hobbyDTO" id="hMap">
+		<result property="hobbyNum" column="HOBBYNUM"/>
+		<result property="hobby" column="HOBBY"/>
+	</resultMap> -->
+
+
+</mapper>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="member">
+	<select id="one" parameterType="String" resultType="memberDTO">
+		SELECT * FROM "member" WHERE id = #{String}
+	</select>
+	<insert parameterType="memberDTO" id="insert">insert into "MEMBER" values
+		(#{id},#{pw},#{name},#{nickName},#{profil},#{addr1},#{addr2},#{gender},#{birth},#{hobby},#{job},#{subJob},#{message})
+	</insert>
+
+	<select id="selectall" resultType="memberDTO">SELECT * FROM "member"
+	</select>
+
+	<select parameterType="memberDTO" id="selectid"
+		resultType="memberDTO">SELECT * FROM "member" WHERE ID =#{id} </select>
+
+	<select parameterType="memberDTO" id="selectpw"
+		resultType="memberDTO">SELECT * FROM "member" WHERE ID =#{id} and PW =#{pw}
+	</select>
+
+	<update parameterType="memberDTO" id="update">update member set pw=#{pw},
+		nickName=#{nickName}, profil=#{profil}, addr1=#{addr1},
+		addr2=#{addr2}, hobby=#{hobby}, job=#{job}, subjob=#{subJob}
+		where id=#{id} </update>
+
+	<select parameterType="memberDTO" id="selecthobby"
+		resultType="memberDTO">SELECT * FROM "member" WHERE ADDR1=#{addr1} and
+		ADDR2=#{addr2} and HOBBY LIKE '%'||#{hobby}||'%' </select>
+
+	<select parameterType="memberDTO" id="selectjob"
+		resultType="memberDTO">SELECT * FROM "member" WHERE JOB=#{job} and
+		SUBJOB=#{subJob} </select>
+
+	<select parameterType="memberDTO" id="hangle"
+		resultType="memberDTO">SELECT addr1.ADDR1 , subjob.SUBJOB , addr2.ADDR2 ,job.JOB
+		FROM "member" INNER JOIN addr1 ON "member".addr1 = addr1.ADDR1NUM
+		INNER
+		JOIN addr2 ON "member".addr2 = addr2.ADDR2NUM
+		INNER JOIN subjob ON
+		"member".SUBJOB = subjob.SUBJOBNUM
+		INNER JOIN job ON "member".job =
+		job.JOBNUM
+		WHERE "member".addr1 = #{addr1} AND "member".addr2= #{addr2} <!-- AND
+		MEMBER.job = #{job} AND MEMBER.subjob = #{subJob} --> </select>
+
+</mapper>
